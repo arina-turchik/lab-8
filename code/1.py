@@ -1,20 +1,33 @@
+import sys
+import os
+
+def suppress(f):
+    def wrap(*args, **kwargs):
+        origin = sys.stdout
+        with open(os.devnull, 'w') as devnull:
+            sys.stdout = devnull
+            res = f(*args, **kwargs)
+        sys.stdout = origin
+        return res
+    return wrap
+
 def hero_hp():
     hp = 100
 
-    def upd_hp(n):
+    def update_health(n):
         nonlocal hp
         hp += n
-        if hp>100:
-            hp=100
-        if hp<0:
-            hp=0
+        if hp > 100:
+            hp = 100
+        elif hp < 0:
+            hp = 0
+        print(hp)
         return hp
-    return upd_hp
+    print(hp)
+    return update_health
+
 
 hero=hero_hp()
-print('Введите, сколько раз будет изменяться HP героя(целое натуральное число):')
-r=int(input())
-for i in range(r):
-    print('Введите изменение HP героя(для получения урона используйте отрицательные числа, для лечения положительные):')
-    n=int(input())
-    print(hero(n))
+hero(-20)
+hero(-100)
+suppress(hero)(80)
